@@ -4,21 +4,11 @@ import { AlertTriangle, Stethoscope, Hospital, Ruler, ShieldAlert } from 'lucide
 import type { DistrictDetailResponse, EvidenceDriver } from '../lib/types';
 import { fetchDistrict } from '../lib/api';
 import {
-  TIER_COLOR, GAP_LABEL, GAP_COLOR, COMPONENT_WEIGHTS, fmtNum, fmtKm,
+  TIER_COLOR, GAP_COLOR, fmtNum, fmtKm,
 } from '../lib/format';
 import { TierBadge, ConfidenceBadge } from './Badges';
 import { ScoreBreakdown } from './ScoreBreakdown';
-
-function whyThisGap(d: DistrictDetailResponse['district']): string {
-  const contribs = COMPONENT_WEIGHTS.map((c) => ({
-    label: c.label,
-    gap: c.gap,
-    points: Number(d[c.key] ?? 0) * c.weight,
-  })).sort((a, b) => b.points - a.points);
-  const top = contribs[0];
-  const second = contribs[1];
-  return `${top.label} contributes the most to this district's score (${top.points.toFixed(0)} pts), ahead of ${second.label.toLowerCase()} (${second.points.toFixed(0)} pts) — so the recommendation targets ${GAP_LABEL[d.dominant_gap].toLowerCase()} first.`;
-}
+import { RecommendedActions } from './RecommendedActions';
 
 function Stat({ icon, label, value }: { icon?: React.ReactNode; label: string; value: string }) {
   return (
@@ -102,11 +92,10 @@ export function DistrictDetail({ name, state }: { name: string; state: string })
         <span className="text-sm text-muted-foreground">/ 100 Medical Desert Score</span>
       </div>
 
-      {/* Recommendation */}
-      <div className="rounded-lg border-l-4 bg-card p-4" style={{ borderColor: GAP_COLOR[d.dominant_gap] }}>
-        <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Recommended intervention</div>
-        <div className="mt-1 text-base font-semibold text-foreground">{d.recommended_intervention}</div>
-        <p className="mt-2 text-sm text-muted-foreground">{whyThisGap(d)}</p>
+      {/* Recommended action plan */}
+      <div>
+        <h3 className="mb-2 text-sm font-semibold text-foreground">Recommended action plan</h3>
+        <RecommendedActions district={d} />
       </div>
 
       {/* Score breakdown */}
