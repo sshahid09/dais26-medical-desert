@@ -1,0 +1,58 @@
+@import "@databricks/appkit-ui/styles.css";
+
+/* Medical Desert Planner — Databricks brand palette, light theme only. */
+:root,
+.dark {
+  --radius: 0.5rem;
+  --background: #f9f7f4;
+  --foreground: #0b2026;
+  --card: #ffffff;
+  --card-foreground: #0b2026;
+  --popover: #ffffff;
+  --popover-foreground: #0b2026;
+  --primary: #ff3621;
+  --primary-foreground: #ffffff;
+  --secondary: #eeede9;
+  --secondary-foreground: #0b2026;
+  --muted: #eeede9;
+  --muted-foreground: #5b6770;
+  --accent: #eeede9;
+  --accent-foreground: #0b2026;
+  --destructive: #c4320a;
+  --destructive-foreground: #ffffff;
+  --success: #157a4a;
+  --success-foreground: #ffffff;
+  --warning: #c77700;
+  --warning-foreground: #ffffff;
+  --border: #e3e1db;
+  --input: #e3e1db;
+  --ring: #ff3621;
+  --chart-1: #ff3621;
+  --chart-2: #0b2026;
+  --chart-3: #c77700;
+  --chart-4: #157a4a;
+  --chart-5: #5b6770;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0b2026;
+  --sidebar-primary: #ff3621;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eeede9;
+  --sidebar-accent-foreground: #0b2026;
+  --sidebar-border: #e3e1db;
+  --sidebar-ring: #ff3621;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #f9f7f4;
+    --foreground: #0b2026;
+    --card: #ffffff;
+    --card-foreground: #0b2026;
+    --popover: #ffffff;
+    --popover-foreground: #0b2026;
+    --muted: #eeede9;
+    --muted-foreground: #5b6770;
+    --border: #e3e1db;
+    --input: #e3e1db;
+  }
+}
