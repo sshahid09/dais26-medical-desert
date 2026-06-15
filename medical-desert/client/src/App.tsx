@@ -5,8 +5,8 @@ import { Menu, Activity } from 'lucide-react';
 import { MapPage } from './pages/MapPage';
 import { DistrictsPage } from './pages/DistrictsPage';
 import { ComparePage } from './pages/ComparePage';
-import { AssistantPage } from './pages/AssistantPage';
 import { AboutPage } from './pages/AboutPage';
+import { FloatingAssistant } from './components/FloatingAssistant';
 import { useCompare } from './lib/compareStore';
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
@@ -30,7 +30,6 @@ function NavLinks({ className, linkClass, onClick }: { className?: string; linkC
       <NavLink to="/compare" className={linkClass} onClick={onClick}>
         Compare{keys.length > 0 && <span className="ml-1.5 rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold text-primary">{keys.length}</span>}
       </NavLink>
-      <NavLink to="/assistant" className={linkClass} onClick={onClick}>Assistant</NavLink>
       <NavLink to="/about" className={linkClass} onClick={onClick}>Methodology</NavLink>
     </nav>
   );
@@ -70,6 +69,7 @@ function Layout() {
       <main className="flex-1 p-4 md:p-6 max-w-[1400px] w-full mx-auto">
         <Outlet />
       </main>
+      <FloatingAssistant />
     </div>
   );
 }
@@ -81,7 +81,6 @@ const router = createBrowserRouter([
       { path: '/', element: <MapPage /> },
       { path: '/districts', element: <DistrictsPage /> },
       { path: '/compare', element: <ComparePage /> },
-      { path: '/assistant', element: <AssistantPage /> },
       { path: '/about', element: <AboutPage /> },
     ],
   },
