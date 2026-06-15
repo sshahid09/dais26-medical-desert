@@ -87,6 +87,8 @@ export function buildRecommendationPlan(d: DistrictFull): RecommendationPlan {
   const supplyMid = d.supply_score >= T.supply.scoreMid;
 
   if (supplyMid) {
+    const _supplyStart = actions.length;
+
     if ((d.n_facilities ?? 0) < T.supply.criticalFacilities) {
       actions.push({
         phase: 'immediate',
@@ -148,6 +150,18 @@ export function buildRecommendationPlan(d: DistrictFull): RecommendationPlan {
         program: 'FRU/CHC bed-strength upgrade',
       });
     }
+
+    // Fallback: percentile score is high but no specific absolute threshold fired
+    if (actions.length === _supplyStart) {
+      actions.push({
+        phase: supplyHigh ? 'short_term' : 'long_term',
+        title: 'District Health Action Plan — supply audit',
+        description: `This district ranks at the ${d.supply_score.toFixed(0)}th percentile nationally for healthcare supply shortage. Commission a DHAP facility audit covering density per 1,000 population, staffing norms, bed ratios, and public-private service mix to identify the highest-impact investment.`,
+        gap: 'supply',
+        metricTrigger: `supply_score = ${d.supply_score.toFixed(0)}/100 (${d.supply_score >= 90 ? 'top 10%' : d.supply_score >= 75 ? 'top 25%' : 'top 50%'} nationally for supply shortage)`,
+        program: 'NHM – District Health Action Plan (DHAP)',
+      });
+    }
   }
 
   // ── 2. ACCESS GAP ─────────────────────────────────────────────────────────
@@ -155,6 +169,7 @@ export function buildRecommendationPlan(d: DistrictFull): RecommendationPlan {
   const accessMid = d.access_score >= T.access.scoreMid;
 
   if (accessMid) {
+    const _accessStart = actions.length;
     const distKm = d.km_nearest_facility ?? 0;
     if (distKm >= T.access.criticalDistKm) {
       actions.push({
@@ -196,6 +211,18 @@ export function buildRecommendationPlan(d: DistrictFull): RecommendationPlan {
         program: 'JSSK / 108 ambulance network',
       });
     }
+
+    // Fallback: high access score but distances don't meet specific thresholds
+    if (actions.length === _accessStart) {
+      actions.push({
+        phase: accessHigh ? 'immediate' : 'short_term',
+        title: 'Mobile outreach clinic + referral transport',
+        description: `This district ranks at the ${d.access_score.toFixed(0)}th percentile nationally for geographic access barriers. Deploy scheduled mobile clinic visits and establish a formal 108/102 ambulance referral protocol to reduce effective travel time to care.`,
+        gap: 'access',
+        metricTrigger: `access_score = ${d.access_score.toFixed(0)}/100 (${d.access_score >= 90 ? 'top 10%' : d.access_score >= 75 ? 'top 25%' : 'top 50%'} nationally for access barriers)`,
+        program: 'NHM Mobile Health Unit + 108 ambulance network',
+      });
+    }
   }
 
   // ── 3. VULNERABILITY GAP ──────────────────────────────────────────────────
@@ -203,6 +230,7 @@ export function buildRecommendationPlan(d: DistrictFull): RecommendationPlan {
   const vulnMid = d.vulnerability_score >= T.vulnerability.scoreMid;
 
   if (vulnMid) {
+    const _vulnStart = actions.length;
     const ins = d.insurance_pct ?? 100;
     if (ins < T.vulnerability.criticalInsurance) {
       actions.push({
@@ -277,6 +305,18 @@ export function buildRecommendationPlan(d: DistrictFull): RecommendationPlan {
         program: 'Jal Jeevan Mission – household connections',
       });
     }
+
+    // Fallback: high vulnerability score but no specific indicator crossed threshold
+    if (actions.length === _vulnStart) {
+      actions.push({
+        phase: vulnHigh ? 'short_term' : 'long_term',
+        title: 'Targeted ASHA expansion + community health workers',
+        description: `This district ranks at the ${d.vulnerability_score.toFixed(0)}th percentile nationally for population vulnerability. Scale up ASHA coverage, prioritise enrollment of marginalised households in PM-JAY, and run village health sanitation and nutrition committee (VHSNC) sessions.`,
+        gap: 'vulnerability',
+        metricTrigger: `vulnerability_score = ${d.vulnerability_score.toFixed(0)}/100 (${d.vulnerability_score >= 90 ? 'top 10%' : d.vulnerability_score >= 75 ? 'top 25%' : 'top 50%'} nationally for population vulnerability)`,
+        program: 'NHM ASHA + Ayushman Bharat PM-JAY',
+      });
+    }
   }
 
   // ── 4. HEALTH BURDEN GAP ──────────────────────────────────────────────────
@@ -284,6 +324,7 @@ export function buildRecommendationPlan(d: DistrictFull): RecommendationPlan {
   const burdenMid = d.burden_score >= T.burden.scoreMid;
 
   if (burdenMid) {
+    const _burdenStart = actions.length;
     const birth = d.institutional_birth_pct ?? 100;
     if (birth < T.burden.criticalBirth) {
       actions.push({
@@ -367,6 +408,18 @@ export function buildRecommendationPlan(d: DistrictFull): RecommendationPlan {
         program: 'Anaemia Mukt Bharat – IFA scale-up',
       });
     }
+
+    // Fallback: high burden score but no specific indicator crossed threshold
+    if (actions.length === _burdenStart) {
+      actions.push({
+        phase: burdenHigh ? 'immediate' : 'short_term',
+        title: 'Integrated maternal & child health programme',
+        description: `This district ranks at the ${d.burden_score.toFixed(0)}th percentile nationally for health burden. Launch an integrated programme covering ANC, institutional delivery, full immunisation, and child nutrition through the NHM RMNCH+A framework.`,
+        gap: 'burden',
+        metricTrigger: `burden_score = ${d.burden_score.toFixed(0)}/100 (${d.burden_score >= 90 ? 'top 10%' : d.burden_score >= 75 ? 'top 25%' : 'top 50%'} nationally for health burden)`,
+        program: 'NHM RMNCH+A + POSHAN Abhiyan',
+      });
+    }
   }
 
   // ── 5. SPECIALTY GAP ──────────────────────────────────────────────────────
@@ -374,6 +427,7 @@ export function buildRecommendationPlan(d: DistrictFull): RecommendationPlan {
   const specMid = d.specialty_gap_score >= T.specialty.scoreMid;
 
   if (specMid) {
+    const _specStart = actions.length;
     const nMat = d.n_maternal_facilities ?? 0;
     if (nMat < T.specialty.noMaternalFacilities) {
       actions.push({
@@ -406,6 +460,18 @@ export function buildRecommendationPlan(d: DistrictFull): RecommendationPlan {
         gap: 'specialty',
         metricTrigger: 'Specialist gap combined with high access barrier',
         program: 'NHM specialist contractual recruitment',
+      });
+    }
+
+    // Fallback: high specialty score but no specific check fired
+    if (actions.length === _specStart) {
+      actions.push({
+        phase: specHigh ? 'short_term' : 'long_term',
+        title: 'eSanjeevani telemedicine + specialist outreach',
+        description: `This district ranks at the ${d.specialty_gap_score.toFixed(0)}th percentile nationally for specialist care gap. Connect the nearest PHC/CHC to eSanjeevani for remote OB/GYN, paediatric, and surgical consultations and schedule quarterly visiting specialist camps.`,
+        gap: 'specialty',
+        metricTrigger: `specialty_gap_score = ${d.specialty_gap_score.toFixed(0)}/100 (${d.specialty_gap_score >= 90 ? 'top 10%' : d.specialty_gap_score >= 75 ? 'top 25%' : 'top 50%'} nationally for specialist gap)`,
+        program: 'eSanjeevani specialist teleconsultation',
       });
     }
   }
