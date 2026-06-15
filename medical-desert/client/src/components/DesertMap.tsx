@@ -19,6 +19,34 @@ interface Props {
 
 interface XForm { k: number; x: number; y: number }
 
+// d3-geo uses spherical winding: a polygon's interior is the side its ring winds
+// around. GeoJSON wound the "wrong" way makes every state cover the whole globe,
+// which collapses fitExtent so India shrinks to a dot. Normalize on load: exterior
+// rings clockwise (negative shoelace area in lon/lat), holes counter-clockwise.
+function ringArea(ring: number[][]): number {
+  let a = 0;
+  for (let i = 0, n = ring.length, j = n - 1; i < n; j = i++) {
+    a += ring[j][0] * ring[i][1] - ring[i][0] * ring[j][1];
+  }
+  return a / 2;
+}
+function fixPoly(poly: number[][][]): number[][][] {
+  return poly.map((ring, idx) => {
+    const a = ringArea(ring);
+    const wantNegative = idx === 0; // exterior ring should be clockwise (area < 0)
+    return (wantNegative && a > 0) || (!wantNegative && a < 0) ? ring.slice().reverse() : ring;
+  });
+}
+function rewind(fc: FeatureCollection): FeatureCollection {
+  for (const f of fc.features) {
+    const g = f.geometry;
+    if (!g) continue;
+    if (g.type === 'Polygon') g.coordinates = fixPoly(g.coordinates as number[][][]);
+    else if (g.type === 'MultiPolygon') g.coordinates = (g.coordinates as number[][][][]).map(fixPoly);
+  }
+  return fc;
+}
+
 export function DesertMap({ districts, selected, onSelect }: Props) {
   const [geo, setGeo] = useState<FeatureCollection | null>(null);
   const [hover, setHover] = useState<{ d: DistrictListItem; sx: number; sy: number } | null>(null);
@@ -31,7 +59,7 @@ export function DesertMap({ districts, selected, onSelect }: Props) {
     let alive = true;
     fetch('/india-states.geojson')
       .then((r) => r.json() as Promise<FeatureCollection>)
-      .then((d) => { if (alive) setGeo(d); })
+      .then((d) => { if (alive) setGeo(rewind(d)); })
       .catch(() => { if (alive) setGeo(null); });
     return () => { alive = false; };
   }, []);
