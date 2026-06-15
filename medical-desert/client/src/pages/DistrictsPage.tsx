@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
-  Sheet, SheetContent, SheetHeader, SheetTitle, Skeleton, Alert, AlertTitle, AlertDescription, Button,
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+  Skeleton, Alert, AlertTitle, AlertDescription, Button,
 } from '@databricks/appkit-ui/react';
 import { Plus, Check } from 'lucide-react';
 import type { DistrictListItem, StatsResponse } from '../lib/types';
@@ -114,12 +115,14 @@ export function DistrictsPage() {
         </div>
       </div>
 
-      <Sheet open={!!selected} onOpenChange={(o) => { if (!o) setSelected(null); }}>
-        <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto">
-          <SheetHeader><SheetTitle>District detail</SheetTitle></SheetHeader>
-          {selected && <div className="mt-4"><DistrictDetail name={selected.district_name} state={selected.state_ut} /></div>}
-        </SheetContent>
-      </Sheet>
+      <Dialog open={!!selected} onOpenChange={(o) => { if (!o) setSelected(null); }}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>District detail</DialogTitle>
+          </DialogHeader>
+          {selected && <div className="mt-2"><DistrictDetail name={selected.district_name} state={selected.state_ut} /></div>}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
-  Sheet, SheetContent, SheetHeader, SheetTitle, Skeleton, Alert, AlertTitle, AlertDescription,
+  Dialog, DialogContent, DialogHeader, DialogTitle, Skeleton, Alert, AlertTitle, AlertDescription,
 } from '@databricks/appkit-ui/react';
 import type { DistrictListItem, StatsResponse } from '../lib/types';
 import { fetchStats, fetchDistricts } from '../lib/api';
@@ -47,10 +47,14 @@ export function MapPage() {
 
       {/* KPI strip */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Kpi label="Districts scored" value={fmtNum(ov?.districts)} sub="NFHS-5 across 36 states/UTs" />
-        <Kpi label="Underserved" value={fmtNum(ov?.underserved)} sub="Critical + High-risk tiers" accent={TIER_COLOR.Critical} />
-        <Kpi label="Facilities mapped" value={fmtNum(ov?.facilities)} sub="from the facility registry" />
-        <Kpi label="High-confidence" value={fmtNum(ov?.high_conf)} sub="districts with strong evidence" accent={TIER_COLOR.Adequate} />
+        <Kpi label="Districts scored" value={fmtNum(ov?.districts)} sub="NFHS-5 across 36 states/UTs"
+          tooltip="Total districts scored using NFHS-5 survey data — the largest nationally representative health survey in India, covering all 36 states and union territories." />
+        <Kpi label="Underserved" value={fmtNum(ov?.underserved)} sub="Critical + High-risk tiers" accent={TIER_COLOR.Critical}
+          tooltip="Districts in the Critical or High-risk tier where healthcare supply and access fall significantly short of population need. These are the priority intervention targets." />
+        <Kpi label="Facilities mapped" value={fmtNum(ov?.facilities)} sub="from the facility registry"
+          tooltip="Healthcare facilities geo-located from the Virtue Foundation registry and matched to districts via India Post pincode data. Includes hospitals, clinics, pharmacies, and more." />
+        <Kpi label="High-confidence" value={fmtNum(ov?.high_conf)} sub="districts with strong evidence" accent={TIER_COLOR.Adequate}
+          tooltip="Districts where NFHS-5 indicator completeness is high (≥80%), giving stronger statistical confidence in the Medical Desert Score. Scores for low-completeness districts carry more uncertainty." />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-5">
@@ -104,21 +108,21 @@ export function MapPage() {
         </div>
       </div>
 
-      {/* Detail drawer */}
-      <Sheet open={!!selected} onOpenChange={(o) => { if (!o) setSelected(null); }}>
-        <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
+      {/* Detail dialog */}
+      <Dialog open={!!selected} onOpenChange={(o) => { if (!o) setSelected(null); }}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
               District detail{selected && <TierBadge tier={selected.severity_tier} />}
-            </SheetTitle>
-          </SheetHeader>
+            </DialogTitle>
+          </DialogHeader>
           {selected && (
-            <div className="mt-4">
+            <div className="mt-2">
               <DistrictDetail name={selected.district_name} state={selected.state_ut} />
             </div>
           )}
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
