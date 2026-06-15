@@ -15,9 +15,10 @@ resources:
       name: "medical-desert"
       description: "Medical Desert Planner - find India's underserved health districts"
       source_code_path: ./
-      # Uncomment to enable on behalf of user API scopes. Available scopes: sql, dashboards.genie, files.files, serving.serving-endpoints
-      # user_api_scopes:
-      #   - sql
+      # On-behalf-of-user API scopes. dashboards.genie lets the Genie plugin query the
+      # "India Healthcare Desert Planner" space as the signed-in user.
+      user_api_scopes:
+        - dashboards.genie
 
       # The resources which this app has access to.
       resources:

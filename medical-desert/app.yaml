@@ -2,3 +2,7 @@ command: ['npm', 'run', 'start']
 env:
   - name: LAKEBASE_ENDPOINT
     valueFrom: postgres
+  # "India Healthcare Desert Planner" Genie space. AppKit's resource registry validates
+  # this env var at startup for the genie plugin even though spaces are set in code.
+  - name: DATABRICKS_GENIE_SPACE_ID
+    value: '01f168d9b9e11c30850ecaae448de958'
